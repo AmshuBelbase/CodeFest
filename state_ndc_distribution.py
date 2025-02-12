@@ -51,6 +51,86 @@ print("JSON file created successfully.")
 # import json
 # import os
 
+
+# script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# # Paths for Excel and Parquet files
+# formulary_xlsx = os.path.join(
+#     script_dir, 'sampled_basic_drugs_formulary_file.xlsx')
+# plan_info_xlsx = os.path.join(script_dir, 'sampled_planinformation.xlsx')
+
+
+# def load_excel_fast(excel_path, usecols):
+#     """Loads an Excel file with optimizations, or reads from Parquet if available."""
+#     parquet_path = excel_path.replace(".xlsx", ".parquet")
+
+#     if os.path.exists(parquet_path):  # Load from Parquet if available
+#         print(f"Loading from Parquet: {parquet_path}")
+#         return pd.read_parquet(parquet_path)
+#     else:  # Convert Excel to Parquet for future fast loads
+#         print(f"Converting {excel_path} to Parquet for faster access...")
+#         df = pd.read_excel(excel_path, usecols=usecols, engine="openpyxl")
+#         df.to_parquet(parquet_path, index=False)
+#         return df
+
+
+# # 1. Load only essential columns with dtype optimization
+# formulary_cols = ['FORMULARY_ID', 'NDC']
+# plan_info_cols = ['FORMULARY_ID', 'STATE']
+
+# formulary_df = load_excel_fast(formulary_xlsx, formulary_cols)
+# formulary_df["FORMULARY_ID"] = formulary_df["FORMULARY_ID"].astype('category')
+# formulary_df["NDC"] = formulary_df["NDC"].astype('category')
+
+
+# plan_info_df = load_excel_fast(plan_info_xlsx, plan_info_cols)
+# plan_info_df["FORMULARY_ID"] = plan_info_df["FORMULARY_ID"].astype('category')
+# plan_info_df["STATE"] = plan_info_df["STATE"].astype('category')
+
+
+# # formulary_df = pd.read_excel(
+# #     os.path.join(script_dir, 'sampled_basic_drugs_formulary_file.xlsx'),
+# #     usecols=formulary_cols,
+# #     dtype={'FORMULARY_ID': 'category', 'NDC': 'category'}
+# # )
+
+# # plan_info_df = pd.read_excel(
+# #     os.path.join(script_dir, 'sampled_planinformation.xlsx'),
+# #     usecols=plan_info_cols,
+# #     dtype={'FORMULARY_ID': 'category', 'STATE': 'category'}
+# # )
+
+# # 2. Filter out non-"H" contracts first (where STATE is NaN)
+# plan_info_df = plan_info_df.dropna(subset=['STATE'])
+
+# # 3. Merge using query optimization
+# merged_df = formulary_df.merge(
+#     plan_info_df,
+#     on='FORMULARY_ID',
+#     how='inner'
+# )
+
+# # 4. Process in chunks for large datasets
+# chunk_size = 100000
+# result = {}
+
+# for chunk in merged_df.groupby(['NDC', 'STATE']).size().reset_index(name='COUNT').groupby('NDC'):
+#     ndc = chunk[0]
+#     states = chunk[1].set_index('STATE')['COUNT'].to_dict()
+#     result[ndc] = dict(
+#         sorted(states.items(), key=lambda x: x[1], reverse=True))
+
+# # 5. Save to JSON
+# with open(os.path.join(script_dir, 'state_ndc_distribution.json'), 'w') as f:
+#     json.dump(result, f, indent=2)
+
+# print("JSON file created successfully.")
+
+
+# import pandas as pd
+# import json
+# import os
+
 # script_dir = os.path.dirname(os.path.abspath(__file__))
 
 # # Paths for Excel and Parquet files
